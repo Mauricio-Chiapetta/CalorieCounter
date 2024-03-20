@@ -5,7 +5,7 @@ const addEntryButton = document.getElementById("add-entry");
 const clearButton = document.getElementById("clear");
 const output = document.getElementById("output");
 
-let isError = false;
+let isError = false;//global error flag
 
 // funçao antiga(usa muito mais memoria , queremos otimizar !)
 // function cleanInputString(str){
@@ -44,11 +44,54 @@ function addEntry() {
    <label for="${entryDropdown.value}-${entryNumber}-calories">Entry ${entryNumber} Calories</label>
    <input type="number" min="0" placeholder="Calories" id="${entryDropdown.value}-${entryNumber}-calories">`;
 
-   targetInputContainer.insertAdjacentHTML("beforeend",HTMLString)
+    targetInputContainer.insertAdjacentHTML("beforeend", HTMLString)
 }
 
-addEntryButton.addEventListener('click',addEntry)
+addEntryButton.addEventListener('click', addEntry)
 
-function getCaloriesFromInputs(list){
-let calories = 0
+function getCaloriesFromInputs(list) {
+    let calories = 0
+    for (const item of list) {
+        // const currVal = item.value
+        const currVal = cleanInputString(item.value);
+        const invalidInputMatch = isIsvalidInput(currVal)
+
+        if (invalidInputMatch) {
+            alert(`Invalid Input: ${invalidInputMatch[0]}`)
+            isError = true
+            return null
+        }
+
+        calories += Number(currVal)
+    }
+    return calories
 }
+
+function calculateCalories(e){
+    e.preventDefault()
+    isError =  false
+
+    const breakfastNumberInputs = document.querySelectorAll('#breakfast input[type=number]')
+    const lunchNumberInputs = document.querySelectorAll('#lunch input[type=number]')
+    const dinnerNumberInputs = document.querySelectorAll('#dinner input[type=number]')
+    const snacksNumberInputs = document.querySelectorAll('#snacks input[type=number]')
+    const exerciseNumberInputs = document.querySelectorAll('#exercise input[type=number]')
+
+    const breakfastCalories = getCaloriesFromInputs(breakfastNumberInputs)
+    const lunchCalories = getCaloriesFromInputs(lunchNumberInputs)
+    const dinnerCalories = getCaloriesFromInputs(dinnerNumberInputs)
+    const snacksCalories = getCaloriesFromInputs(snacksNumberInputs)
+    const exerciseCalories = getCaloriesFromInputs(exerciseNumberInputs)
+
+    const budgetCalories = getCaloriesFromInputs([budgetNumberInput])
+
+    if(isError){
+        return
+       
+    }
+    // calculos:
+    const consumedCalories = breakfastCalories + lunchCalories + dinnerCalories + snacksCalories
+    const remainingCalories = budgetCalories - consumedCalories + exerciseCalories
+
+}
+
